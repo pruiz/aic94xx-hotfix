@@ -274,6 +274,7 @@ static int asd_aic9405_setup(struct asd_ha_struct *asd_ha)
 	return 0;
 }
 
+#if 0
 static ssize_t asd_show_dev_rev(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
@@ -282,6 +283,7 @@ static ssize_t asd_show_dev_rev(struct device *dev,
 			asd_dev_rev[asd_ha->revision_id]);
 }
 static DEVICE_ATTR(revision, S_IRUGO, asd_show_dev_rev, NULL);
+#endif
 
 static ssize_t asd_show_dev_bios_build(struct device *dev,
 				       struct device_attribute *attr,char *buf)
@@ -478,13 +480,9 @@ static int asd_create_dev_attrs(struct asd_ha_struct *asd_ha)
 {
 	int err;
 
-	err = device_create_file(&asd_ha->pcidev->dev, &dev_attr_revision);
-	if (err)
-		return err;
-
 	err = device_create_file(&asd_ha->pcidev->dev, &dev_attr_bios_build);
 	if (err)
-		goto err_rev;
+		return err;
 
 	err = device_create_file(&asd_ha->pcidev->dev, &dev_attr_pcba_sn);
 	if (err)
@@ -499,14 +497,11 @@ err_update_bios:
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_pcba_sn);
 err_biosb:
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_bios_build);
-err_rev:
-	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_revision);
 	return err;
 }
 
 static void asd_remove_dev_attrs(struct asd_ha_struct *asd_ha)
 {
-	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_revision);
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_bios_build);
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_pcba_sn);
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_update_bios);
